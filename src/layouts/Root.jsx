@@ -8,7 +8,7 @@ const Root = () => {
   const { state } = useNavigation;
   return (
     <div className="bg-base-200 min-h-screen">
-      <header className="">
+      <header className="sticky top-0 z-50 shadow-sm bg-white/80">
         <Navbar></Navbar>
       </header>
       <main className="w-11/12 mx-auto py-5">

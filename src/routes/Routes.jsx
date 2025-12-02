@@ -14,6 +14,8 @@ import MyProfile from "../pages/MyProfile/MyProfile";
 import UpdateProfile from "../pages/UpdateProfile/UpdateProfile";
 import ViewAllSection from "../pages/ViewAllSection/ViewAllSection";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
+import Contact from "../pages/Contact/Contact";
+import Support from "../pages/Support/Support ";
 
 const router = createBrowserRouter([
   {
@@ -25,11 +27,7 @@ const router = createBrowserRouter([
       {
         path: "/detailscard/:id",
 
-        element: (
-          <PrivetProvider>
-            <DetailsCard></DetailsCard>
-          </PrivetProvider>
-        ),
+        element: <DetailsCard></DetailsCard>,
 
         loader: () => fetch("/data.json"),
         hydrateFallbackElement: <Loading></Loading>,
@@ -58,6 +56,15 @@ const router = createBrowserRouter([
         path: "/all-course",
         Component: ViewAllSection,
       },
+      {
+        path: "/contact",
+        Component: Contact,
+      },
+      {
+        path: "/support",
+        Component: Support,
+      },
+
       {
         path: "/profile",
 

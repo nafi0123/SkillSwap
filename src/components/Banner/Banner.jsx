@@ -30,7 +30,7 @@ const Banner = () => {
   ];
 
   return (
-    <section className="relative w-full overflow-hidden rounded-2xl">
+    <section className="relative w-full overflow-hidden rounded-2xl scroll-behavior: smooth;">
       <Swiper
         modules={[Autoplay, Pagination]}
         spaceBetween={0}
