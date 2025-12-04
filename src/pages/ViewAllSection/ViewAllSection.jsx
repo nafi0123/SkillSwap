@@ -10,6 +10,8 @@ const ViewAllSection = () => {
   const [loading, setLoading] = useState(true);
 
   const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [excludeOutOfStock, setExcludeOutOfStock] = useState(false);
 
@@ -22,7 +24,11 @@ const ViewAllSection = () => {
         setLoading(false);
 
         const prices = data.map((item) => item.price);
-        setPriceRange([Math.min(...prices), Math.max(...prices)]);
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        setPriceRange([min, max]);
+        setMinPrice(min);
+        setMaxPrice(max);
       });
 
     AOS.init({
@@ -34,14 +40,17 @@ const ViewAllSection = () => {
   useEffect(() => {
     let temp = [...cards];
 
+    // Price filter
     temp = temp.filter(
       (item) => item.price >= priceRange[0] && item.price <= priceRange[1]
     );
 
+    // Category filter
     if (selectedCategory.length > 0) {
       temp = temp.filter((item) => selectedCategory.includes(item.category));
     }
 
+    // Out-of-stock filter
     if (excludeOutOfStock) {
       temp = temp.filter((item) => item.slotsAvailable > 0);
     }
@@ -58,7 +67,7 @@ const ViewAllSection = () => {
   };
 
   const handleReset = () => {
-    setPriceRange([0, Math.max(...cards.map((c) => c.price))]);
+    setPriceRange([minPrice, maxPrice]);
     setSelectedCategory([]);
     setExcludeOutOfStock(false);
   };
@@ -70,22 +79,34 @@ const ViewAllSection = () => {
   return (
     <div className="w-11/12 mx-auto py-10">
       {/* MOBILE TOP FILTER BAR */}
-      <div className="lg:hidden mb-5 p-4 bg-white  rounded-xl shadow-sm">
+      <div className="lg:hidden mb-5 p-4 bg-white rounded-xl shadow-sm">
         <h3 className="font-semibold text-lg mb-3">Filters</h3>
 
-        {/* Price */}
+        {/* Price Range */}
         <div className="mb-4">
           <label className="text-sm font-medium">Price Range</label>
-          <input
-            type="range"
-            min={0}
-            max={1000}
-            value={priceRange[1]}
-            onChange={(e) =>
-              setPriceRange([priceRange[0], Number(e.target.value)])
-            }
-            className="w-full"
-          />
+          <div className="flex gap-2 items-center">
+            <input
+              type="range"
+              min={minPrice}
+              max={maxPrice}
+              value={priceRange[0]}
+              onChange={(e) =>
+                setPriceRange([Math.min(Number(e.target.value), priceRange[1]), priceRange[1]])
+              }
+              className="w-full"
+            />
+            <input
+              type="range"
+              min={minPrice}
+              max={maxPrice}
+              value={priceRange[1]}
+              onChange={(e) =>
+                setPriceRange([priceRange[0], Math.max(Number(e.target.value), priceRange[0])])
+              }
+              className="w-full"
+            />
+          </div>
           <p className="text-sm text-gray-600 mt-1">
             ${priceRange[0]} - ${priceRange[1]}
           </p>
@@ -133,10 +154,12 @@ const ViewAllSection = () => {
       <div className="flex gap-6">
         {/* DESKTOP SIDEBAR */}
         <div className="hidden lg:block lg:w-1/4 lg:min-h-screen">
-          <div className="sticky top-24 bg-white p-6 rounded-xl shadow-md ">
+          <div className="sticky top-24 bg-white p-6 rounded-xl shadow-md">
             <FilterUI
               priceRange={priceRange}
               setPriceRange={setPriceRange}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
               excludeOutOfStock={excludeOutOfStock}
               setExcludeOutOfStock={setExcludeOutOfStock}
               selectedCategory={selectedCategory}
@@ -164,9 +187,12 @@ const ViewAllSection = () => {
   );
 };
 
+// FilterUI Component for Desktop Sidebar
 const FilterUI = ({
   priceRange,
   setPriceRange,
+  minPrice,
+  maxPrice,
   excludeOutOfStock,
   setExcludeOutOfStock,
   selectedCategory,
@@ -188,18 +214,30 @@ const FilterUI = ({
 
       {/* Price Filter */}
       <div className="mb-6">
-        <label className="font-medium">Price</label>
-        <input
-          type="range"
-          min={0}
-          max={1000}
-          value={priceRange[1]}
-          onChange={(e) =>
-            setPriceRange([priceRange[0], Number(e.target.value)])
-          }
-          className="w-full"
-        />
-        <p className="text-sm text-gray-600">
+        <label className="font-medium">Price Range</label>
+        <div className="flex gap-2 items-center">
+          <input
+            type="range"
+            min={minPrice}
+            max={maxPrice}
+            value={priceRange[0]}
+            onChange={(e) =>
+              setPriceRange([Math.min(Number(e.target.value), priceRange[1]), priceRange[1]])
+            }
+            className="w-full"
+          />
+          <input
+            type="range"
+            min={minPrice}
+            max={maxPrice}
+            value={priceRange[1]}
+            onChange={(e) =>
+              setPriceRange([priceRange[0], Math.max(Number(e.target.value), priceRange[0])])
+            }
+            className="w-full"
+          />
+        </div>
+        <p className="text-sm text-gray-600 mt-1">
           ${priceRange[0]} - ${priceRange[1]}
         </p>
       </div>
